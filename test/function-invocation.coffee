@@ -436,7 +436,7 @@ suite 'Function Invocation', ->
     dotAccess = -> obj.prototype
     protoAccess = -> obj
     eq dotAccess().id, nonce
-    eq protoAccess()::id, nonce
+    eq protoAccess():|:id, nonce
 
   test "jashkenas/coffee-script#960: improved 'do'", ->
 

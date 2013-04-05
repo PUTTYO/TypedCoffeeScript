@@ -707,21 +707,21 @@ class exports.Compiler
     ]
     [CS.CompoundAssignOp, ({assignee, expression, inScope}) ->
       op = switch @op
-        when CS.LogicalAndOp::className         then '&&'
-        when CS.LogicalOrOp::className          then '||'
-        when CS.ExistsOp::className             then '?'
-        when CS.BitOrOp::className              then '|'
-        when CS.BitXorOp::className             then '^'
-        when CS.BitAndOp::className             then '&'
-        when CS.LeftShiftOp::className          then '<<'
-        when CS.SignedRightShiftOp::className   then '>>'
-        when CS.UnsignedRightShiftOp::className then '>>>'
-        when CS.PlusOp::className               then '+'
-        when CS.SubtractOp::className           then '-'
-        when CS.MultiplyOp::className           then '*'
-        when CS.DivideOp::className             then '/'
-        when CS.RemOp::className                then '%'
-        when CS.ExpOp::className                then '**'
+        when CS.LogicalAndOp:|:className         then '&&'
+        when CS.LogicalOrOp:|:className          then '||'
+        when CS.ExistsOp:|:className             then '?'
+        when CS.BitOrOp:|:className              then '|'
+        when CS.BitXorOp:|:className             then '^'
+        when CS.BitAndOp:|:className             then '&'
+        when CS.LeftShiftOp:|:className          then '<<'
+        when CS.SignedRightShiftOp:|:className   then '>>'
+        when CS.UnsignedRightShiftOp:|:className then '>>>'
+        when CS.PlusOp:|:className               then '+'
+        when CS.SubtractOp:|:className           then '-'
+        when CS.MultiplyOp:|:className           then '*'
+        when CS.DivideOp:|:className             then '/'
+        when CS.RemOp:|:className                then '%'
+        when CS.ExpOp:|:className                then '**'
         else throw new Error 'Unrecognised compound assignment operator'
 
       # if assignee is an identifier, fail unless assignee is in scope
@@ -949,7 +949,7 @@ class exports.Compiler
         @addRule ctor, handler
 
   addRule: (ctor, handler) ->
-    @rules[ctor::className] = handler
+    @rules[ctor:|:className] = handler
     this
 
   # TODO: comment

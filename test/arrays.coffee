@@ -137,13 +137,13 @@ suite 'Arrays', ->
       a = 'a'
       obj = {a: arr, prototype: {a: arr}}
       arrayEq arr, [obj.a...]
-      arrayEq arr, [obj::a...]
+      arrayEq arr, [obj:|:a...]
       arrayEq arr, [obj[a]...]
-      arrayEq arr, [obj::[a]...]
+      arrayEq arr, [obj:|:[a]...]
       arrayEq arr, [obj?.a...]
-      arrayEq arr, [obj?::a...]
+      arrayEq arr, [obj?:|:a...]
       arrayEq arr, [obj?[a]...]
-      arrayEq arr, [obj?::[a]...]
+      arrayEq arr, [obj?:|:[a]...]
 
     test 'splats and function invocation', ->
       arr = [1, 2, 3]

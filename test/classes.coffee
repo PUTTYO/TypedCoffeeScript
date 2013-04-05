@@ -2,7 +2,7 @@ suite 'Classes', ->
 
   suite 'Class Definition', ->
 
-    #test 'Overriding the static property new doesn't clobber Function::new', ->
+    #test 'Overriding the static property new doesn't clobber Function:|:new', ->
     #
     #  class OneClass
     #    @new: 'new'
@@ -23,9 +23,9 @@ suite 'Classes', ->
     #test 'basic classes, again, but in the manual prototype style', ->
     #
     #  Base = ->
-    #  Base::func = (string) ->
+    #  Base:|:func = (string) ->
     #    'zero/' + string
-    #  Base::['func-func'] = (string) ->
+    #  Base:|:['func-func'] = (string) ->
     #    "dynamic-#{string}"
     #
     #  FirstChild = ->
@@ -36,13 +36,13 @@ suite 'Classes', ->
     #
     #  ThirdChild extends SecondChild extends FirstChild extends Base
     #
-    #  FirstChild::func = (string) ->
+    #  FirstChild:|:func = (string) ->
     #    super('one/') + string
     #
-    #  SecondChild::func = (string) ->
+    #  SecondChild:|:func = (string) ->
     #    super('two/') + string
     #
-    #  ThirdChild::func = (string) ->
+    #  ThirdChild:|:func = (string) ->
     #    super('three/') + string
     #
     #  result = (new ThirdChild).func 'four'
@@ -165,7 +165,7 @@ suite 'Classes', ->
 
       class Base
         @attr = (name) ->
-          @::[name] = (val) ->
+          @:|:[name] = (val) ->
             if arguments.length > 0
               @["_#{name}"] = val
             else
@@ -250,7 +250,7 @@ suite 'Classes', ->
       class B extends A
         method: ->
         constructor: ctor
-      ok B::method
+      ok B:|:method
 
     test 'jashkenas/coffee-script#1182: execution order needs to be considered as well', ->
       counter = 0
@@ -272,7 +272,7 @@ suite 'Classes', ->
     test 'jashkenas/coffee-script#1372: bound class methods with reserved names', ->
       class C
         delete: =>
-      ok C::delete
+      ok C:|:delete
 
     test 'jashkenas/coffee-script#1464: bound class methods should keep context', ->
       nonce  = {}
@@ -439,7 +439,7 @@ suite 'Classes', ->
     test 'classes wrapped in decorators', ->
 
       func = (klass) ->
-        klass::prop = 'value'
+        klass:|:prop = 'value'
         klass
 
       func class Test
@@ -516,7 +516,7 @@ suite 'Classes', ->
     #  ok result is 'zero/one/two/three/four'
     #  ok Base.static('word') is 'static/word'
     #
-    #  FirstChild::func = (string) ->
+    #  FirstChild:|:func = (string) ->
     #    super('one/').length + string
     #
     #  result = (new ThirdChild).func 'four'
@@ -605,16 +605,16 @@ suite 'Classes', ->
       class B extends A
         prop: nonce
         constructor: ->
-      eq nonce, B::prop
+      eq nonce, B:|:prop
 
     #test 'jashkenas/coffee-script#1380: `super` with reserved names', ->
     #  class C
     #    do: -> super
-    #  ok C::do
+    #  ok C:|:do
     #
     #  class B
     #    0: -> super
-    #  ok B::[0]
+    #  ok B:|:[0]
 
     test 'jashkenas/coffee-script#1482: classes can extend expressions', ->
       id = (x) -> x

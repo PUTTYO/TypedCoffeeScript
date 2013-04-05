@@ -12,7 +12,7 @@ createNode = (type, props) ->
   listMembers: []
   instanceof: (ctors...) ->
     # not a fold for efficiency's sake
-    for ctor in ctors when @type is ctor::type
+    for ctor in ctors when @type is ctor:|:type
       return yes
     no
   toBasicObject: ->
@@ -80,8 +80,8 @@ nodeData = [
 
 for [node, isStatement, params] in nodeData
   exports[node] = ctor = createNode node, params
-  ctor::isStatement = isStatement
-  ctor::isExpression = not isStatement
+  ctor:|:isStatement = isStatement
+  ctor:|:isExpression = not isStatement
 
 
 {
@@ -96,9 +96,9 @@ for [node, isStatement, params] in nodeData
 ## Nodes that contain primitive properties
 
 handlePrimitives = (ctor, primitives) ->
-  ctor::childNodes = difference ctor::childNodes, primitives
-  ctor::toBasicObject = ->
-    obj = Nodes::toBasicObject.call this
+  ctor:|:childNodes = difference ctor:|:childNodes, primitives
+  ctor:|:toBasicObject = ->
+    obj = Nodes:|:toBasicObject.call this
     for primitive in primitives
       obj[primitive] = @[primitive]
     obj
@@ -116,7 +116,7 @@ handlePrimitives VariableDeclaration, ['kind']
 
 ## Nodes that contain list properties
 
-handleLists = (ctor, listProps) -> ctor::listMembers = listProps
+handleLists = (ctor, listProps) -> ctor:|:listMembers = listProps
 
 handleLists ArrayExpression, ['elements']
 handleLists BlockStatement, ['body']

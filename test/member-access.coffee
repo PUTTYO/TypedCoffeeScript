@@ -29,23 +29,23 @@ suite 'Member Access', ->
     eq undefined, nil?[a].b
     eq undefined, nil?[a][b]
     # proto-member access
-    eq nonceB, obj::b
-    eq nonceB, obj?::b
-    eq nonceA, obj?::b.a
-    eq nonceA, obj?::b[a]
-    throws -> nil::b
-    eq undefined, nil?::b
-    eq undefined, nil?::b.a
-    eq undefined, nil?::b[a]
+    eq nonceB, obj:|:b
+    eq nonceB, obj?:|:b
+    eq nonceA, obj?:|:b.a
+    eq nonceA, obj?:|:b[a]
+    throws -> nil:|:b
+    eq undefined, nil?:|:b
+    eq undefined, nil?:|:b.a
+    eq undefined, nil?:|:b[a]
     # dynamic proto-member access
-    eq nonceB, obj::[b]
-    eq nonceB, obj?::[b]
-    eq nonceA, obj?::[b].a
-    eq nonceA, obj?::[b][a]
-    throws -> nil::[b]
-    eq undefined, nil?::[b]
-    eq undefined, nil?::[b].a
-    eq undefined, nil?::[b][a]
+    eq nonceB, obj:|:[b]
+    eq nonceB, obj?:|:[b]
+    eq nonceA, obj?:|:[b].a
+    eq nonceA, obj?:|:[b][a]
+    throws -> nil:|:[b]
+    eq undefined, nil?:|:[b]
+    eq undefined, nil?:|:[b].a
+    eq undefined, nil?:|:[b][a]
 
   # TODO: combinations of soaked member accesses
 

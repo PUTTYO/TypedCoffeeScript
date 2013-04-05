@@ -52,10 +52,10 @@ suite 'Operators', ->
     ok new Number not instanceof String
     ok new Array not instanceof Boolean
 
-  test "use `::` operator on keywords `this` and `@`", ->
+  test "use `:|:` operator on keywords `this` and `@`", ->
     obj = prototype: prop: nonce = {}
-    eq nonce, (-> @::prop).call obj
-    eq nonce, (-> this::prop).call obj
+    eq nonce, (-> @:|:prop).call obj
+    eq nonce, (-> this:|:prop).call obj
 
 
   suite 'Existential Operator (Binary)', ->
@@ -247,14 +247,14 @@ suite 'Operators', ->
   #  ok (true unless 0 > 1 > 2)
   #  ok (true unless (NaN = 0/0) < 0/0 < NaN)
 
-  test "jashkenas/coffee-script#1234: Applying a splat to :: applies the splat to the wrong object", ->
+  test "jashkenas/coffee-script#1234: Applying a splat to :|: applies the splat to the wrong object", ->
     nonce = {}
     class C
       method: -> @nonce
       nonce: nonce
 
     arr = []
-    eq nonce, C::method arr... # should be applied to `C::`
+    eq nonce, C:|:method arr... # should be applied to `C:|:`
 
   test "jashkenas/coffee-script#1102: String literal prevents line continuation", ->
     eq "': '", '' +

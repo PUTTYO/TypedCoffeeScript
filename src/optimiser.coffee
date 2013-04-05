@@ -6,11 +6,11 @@ exports = module?.exports ? this
 makeDispatcher = (defaultValue, handlers, defaultHandler = (->)) ->
   handlers_ = {}
   for [ctors..., handler] in handlers
-    handlers_[ctor::className] = handler for ctor in ctors
+    handlers_[ctor:|:className] = handler for ctor in ctors
   (node, args...) ->
     return defaultValue unless node?
     handler =
-      if Object::hasOwnProperty.call handlers_, node.className
+      if Object:|:hasOwnProperty.call handlers_, node.className
         handlers_[node.className]
       else defaultHandler
     handler.apply node, args
@@ -349,7 +349,7 @@ class exports.Optimiser
     @rules = {}
     for [ctors..., handler] in defaultRules
       for ctor in ctors
-        @addRule ctor::className, handler
+        @addRule ctor:|:className, handler
 
   addRule: (ctor, handler) ->
     (@rules[ctor] ?= []).push handler
