@@ -611,10 +611,10 @@ memberExpression
     / "?." _ e:MemberNames { return rp({op: CS.SoakedMemberAccessOp, operands: [e]}); }
     / "[" _ e:expression _ "]" { return rp({op: CS.DynamicMemberAccessOp, operands: [e]}); }
     / "?[" _ e:expression _ "]" { return rp({op: CS.SoakedDynamicMemberAccessOp, operands: [e]}); }
-    / "::" _ e:MemberNames { return rp({op: CS.ProtoMemberAccessOp, operands: [e]}); }
-    / "::[" _ e:expression _ "]" { return rp({op: CS.DynamicProtoMemberAccessOp, operands: [e]}); }
-    / "?::" _ e:MemberNames { return rp({op: CS.SoakedProtoMemberAccessOp, operands: [e]}); }
-    / "?::[" _ e:expression _ "]" { return rp({op: CS.SoakedDynamicProtoMemberAccessOp, operands: [e]}); }
+    / ":|:" _ e:MemberNames { return rp({op: CS.ProtoMemberAccessOp, operands: [e]}); }
+    / ":|:[" _ e:expression _ "]" { return rp({op: CS.DynamicProtoMemberAccessOp, operands: [e]}); }
+    / "?:|:" _ e:MemberNames { return rp({op: CS.SoakedProtoMemberAccessOp, operands: [e]}); }
+    / "?:|:[" _ e:expression _ "]" { return rp({op: CS.SoakedDynamicProtoMemberAccessOp, operands: [e]}); }
     / "[" _ left:assignmentExpression? _ ".." exclusive:"."? _ right:assignmentExpression? _ "]" {
         return rp({op: CS.Slice, operands: [!exclusive, left || null, right || null]});
       }
@@ -1033,10 +1033,14 @@ CompoundAssignable
   / !unassignable i:identifier { return i; }
   / contextVar
 ExistsAssignable = CompoundAssignable
+
+TypeClass = $([a-zA-Z] [a-zA-Z0-9]*)
+TypeAnnotation = "::" _ cls:TypeClass {return {annotation:cls};}
+
 Assignable
-  = memberAccess
-  / !unassignable i:identifier { return i; }
-  / contextVar
+  = m:memberAccess _ TypeAnnotation? {return m;}
+  / !unassignable i:identifier _ TypeAnnotation? { return i; }
+  / ctx:contextVar _ TypeAnnotation? {return ctx;}
   / positionalDestructuring
   / namedDestructuring
 
