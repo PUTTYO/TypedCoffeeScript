@@ -25,6 +25,8 @@ guess_expr_type = (expr) ->
     'Number'
   else if (typeof expr.data) is 'string'
     'String'
+  else if (typeof expr.data) is 'boolean'
+    'Boolean'
   else if expr.parameters? and expr.body?
     'Function'
   else

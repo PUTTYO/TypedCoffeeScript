@@ -1,8 +1,7 @@
 x :: Number = 3
 y :: String = "hello"
-z :: String = 'changed'
+z :: Boolean = false
 # z :: String = 4 #=> Error
-y = z
 # y = x #=> Error
 a :: Any = 3
 a = 'fadfa'
