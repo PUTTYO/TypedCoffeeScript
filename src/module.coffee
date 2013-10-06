@@ -32,9 +32,21 @@ scope = {}
 typecheck = (cs_ast) ->
   console.log cs_ast.body.statements
   for {assignee, expression} in cs_ast.body.statements when assignee? and expression?
-    if assignee.annotation?.type?.toLowerCase() isnt guess_expr_type expression
-      throw new Error "'#{assignee.data}' is expected to #{assignee.annotation.type} indeed #{decide_expr_type expression}"
-    scope[assignee.data] = assignee.annotation.type
+    # 型識別子が存在せず、既にそのスコープで宣言済みの型である場合、再度型推論する
+    if scope[assignee.data]?
+      infered_type = guess_expr_type expression
+      registered_type = scope[assignee.data].toLowerCase()
+      unless registered_type is infered_type
+        throw new Error "'#{assignee.data}' is expected to #{registered_type} indeed #{infered_type}"
+
+    # 型識別子が存在する場合スコープに追加する
+    assigned_type = assignee.annotation?.type
+    if assigned_type
+      infered_type = guess_expr_type expression
+      if assigned_type.toLowerCase() is infered_type
+        scope[assignee.data] = assignee.annotation.type
+      else
+        throw new Error "'#{assignee.data}' is expected to #{assignee.annotation.type} indeed #{infered_type}"
   console.log scope
 
 
