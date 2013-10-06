@@ -1049,8 +1049,8 @@ debugger = DEBUGGER { return rp(new CS.Debugger); }
 undefined = UNDEFINED { return rp(new CS.Undefined); }
 null = NULL { return rp(new CS.Null); }
 
-StructExpr = $([a-zA-Z] [a-zA-Z0-9]*)
-StructAnnotation = "::" _ cls:StructExpr {return {annotation:cls};}
+TypeExpr = $([a-zA-Z] [a-zA-Z0-9]*)
+TypeAnnotation = "::" _ type:TypeExpr {return {type:type};}
 
 unassignable = ("arguments" / "eval") !identifierPart
 CompoundAssignable
@@ -1059,7 +1059,7 @@ CompoundAssignable
 ExistsAssignable = CompoundAssignable
 Assignable
   = memberAccess
-  / !unassignable i:identifier _ annotation:StructAnnotation? { i.annotation = annotation; return i; }
+  / !unassignable i:identifier _ annotation:TypeAnnotation? { i.annotation = annotation; return i; }
   / positionalDestructuring
   / namedDestructuring
 
