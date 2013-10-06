@@ -67,13 +67,14 @@ _typecheck = (statements, scope) ->
   # console.log statements, scope
   for statement in statements
     # クラス
-    if statement.nameAssignee? and statement.ctor?
+    if statement.nameAssignee? and statement.body?
       {body, name} = statement
       node = new ScopeNode
       node.name   = name.data
       node.parent = scope
       scope.nodes.push node
       _typecheck body.statements, node
+      continue
 
     # 代入
     if statement.assignee? and statement.expression?

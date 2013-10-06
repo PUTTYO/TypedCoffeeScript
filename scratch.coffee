@@ -13,5 +13,6 @@ fn :: Function = ->
   # x = "" #=> Error
   # y :: String = ""
 
-# f :: Number -> Number = (n) -> n * n
+class X
+  f: ->
 console.log 'finish'
