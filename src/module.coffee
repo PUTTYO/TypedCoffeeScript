@@ -20,6 +20,26 @@ escodegenFormat =
   parentheses: no
 
 
+decide_expr_type = (expr) ->
+  if (typeof expr.data) is 'number'
+    'number'
+  else if (typeof expr.data) is 'string'
+    'string'
+  else
+    'any'
+
+typecheck = (cs_ast) ->
+  scope = {}
+  # console.log cs_ast.body.statements
+
+  for {assignee, expression} in cs_ast.body.statements when assignee?
+    if assignee.annotation.annotation.toLowerCase() isnt decide_expr_type expression
+      throw new Error "'#{assignee.data}' is expected to #{assignee.annotation.annotation} indeed #{decide_expr_type expression}"
+    scope[assignee.data] = assignee.annotation.annotation
+  # console.log scope
+
+
+
 CoffeeScript =
 
   CoffeeScript: CoffeeScript
@@ -37,6 +57,7 @@ CoffeeScript =
       parsed = Parser.parse preprocessed,
         raw: options.raw
         inputSource: options.inputSource
+      typecheck parsed
       if options.optimise then Optimiser.optimise parsed else parsed
     catch e
       throw e unless e instanceof Parser.SyntaxError
