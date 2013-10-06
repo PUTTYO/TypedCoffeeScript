@@ -22,32 +22,52 @@ escodegenFormat =
 
 guess_expr_type = (expr) ->
   if (typeof expr.data) is 'number'
-    'number'
+    'Number'
   else if (typeof expr.data) is 'string'
-    'string'
+    'String'
   else
-    'any'
+    'Any'
 
-typecheck = (cs_ast, scope = {}) ->
+# console = {log: ->}
+
+typecheck = (cs_ast, scope = null) ->
+  class ScopeNode
+    constructor: (@parent = null)->
+      @_nodes = [] #=> ScopeNode...
+      @defs = {} #=> symbol -> type
+    setType: (symbol, type) ->
+      @defs[symbol] = type
+    getType: (symbol) ->
+      @defs[symbol]
+    addNode: (node) ->
+      @_nodes.push node
+    getSymbolContainedScope: (symbol) ->
+      # TODO
+  scope ?= new ScopeNode
   console.log cs_ast.body.statements
   for {assignee, expression} in cs_ast.body.statements when assignee? and expression?
     # 型識別子が存在せず、既にそのスコープで宣言済みの型である場合、再度型推論する
     symbol = assignee.data
-    if scope[symbol]?
+    if scope.getType(symbol)?
       infered_type = guess_expr_type expression
-      registered_type = scope[symbol].toLowerCase()
+      registered_type = scope.getType(symbol)
       # 推論済みor anyならok
-      unless registered_type is infered_type or registered_type is 'any'
+      unless registered_type is infered_type or registered_type is 'Any'
         throw new Error "'#{symbol}' is expected to #{registered_type} indeed #{infered_type}"
 
-    # 型識別子が存在する場合スコープに追加する
+    # 型識別子が存在せず、既にそのスコープで宣言済みの型である場合、再度型推論する識別子が存在する場合スコープに追加する
     assigned_type = assignee.annotation?.type
     if assigned_type
       infered_type = guess_expr_type expression
-      if assigned_type.toLowerCase() is infered_type
-        scope[symbol] = assignee.annotation.type
+      if assigned_type is 'Any'
+        scope.setType symbol, 'Any'
+      else if assigned_type is infered_type
+        scope.setType symbol, assignee.annotation.type
       else
         throw new Error "'#{symbol}' is expected to #{assignee.annotation.type} indeed #{infered_type}"
+    else
+      scope.setType symbol, 'Any'
+
   console.log scope
 
 
