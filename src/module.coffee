@@ -46,19 +46,25 @@ typecheck = (cs_ast, scope = null) ->
   scope ?= new ScopeNode
   console.log cs_ast.body.statements
   for {assignee, expression} in cs_ast.body.statements when assignee? and expression?
-    # 型識別子が存在せず、既にそのスコープで宣言済みの型である場合、再度型推論する
+    symbol          = assignee.data
+    registered_type = scope.getType(symbol)
+    infered_type    = guess_expr_type expression
+
+    # 型識別子が存在し、既にそのスコープで宣言済みのシンボルである場合、二重定義として例外
+    # if scope.getType(symbol)? and registered_type?
+    #   throw new Error 'double bind'
+
+    # 型識別子が存在せず、既にそのスコープで宣言済みのシンボルである場合、再度型推論する
     symbol = assignee.data
     if scope.getType(symbol)?
-      infered_type = guess_expr_type expression
-      registered_type = scope.getType(symbol)
       # 推論済みor anyならok
       unless registered_type is infered_type or registered_type is 'Any'
         throw new Error "'#{symbol}' is expected to #{registered_type} indeed #{infered_type}"
+      continue
 
     # 型識別子が存在せず、既にそのスコープで宣言済みの型である場合、再度型推論する識別子が存在する場合スコープに追加する
     assigned_type = assignee.annotation?.type
     if assigned_type
-      infered_type = guess_expr_type expression
       if assigned_type is 'Any'
         scope.setType symbol, 'Any'
       else if assigned_type is infered_type
