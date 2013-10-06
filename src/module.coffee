@@ -28,7 +28,7 @@ guess_expr_type = (expr) ->
   else
     'Any'
 
-# console = {log: ->}
+console = {log: ->}
 
 typecheck = (cs_ast, scope = null) ->
   class ScopeNode
@@ -44,6 +44,7 @@ typecheck = (cs_ast, scope = null) ->
     getSymbolContainedScope: (symbol) ->
       # TODO
   scope ?= new ScopeNode
+  return unless cs_ast.body
   console.log cs_ast.body.statements
   for {assignee, expression} in cs_ast.body.statements when assignee? and expression?
     symbol          = assignee.data
