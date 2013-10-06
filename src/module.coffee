@@ -25,6 +25,8 @@ guess_expr_type = (expr) ->
     'Number'
   else if (typeof expr.data) is 'string'
     'String'
+  else if expr.parameters? and expr.body?
+    'Function'
   else
     'Any'
 
@@ -32,6 +34,7 @@ guess_expr_type = (expr) ->
 
 class ScopeNode
   constructor: ->
+    @name = ''
     @nodes = [] #=> ScopeNode...
     @defs = {} #=> symbol -> type
     @parent = null
@@ -39,22 +42,33 @@ class ScopeNode
     @defs[symbol] = type
   getType: (symbol) ->
     @defs[symbol]
-  getSymbolContainedScope: (symbol) ->
-    # TODO
+  getScopedType: (symbol) ->
+    @getType(symbol) or @parent?.getScopedType(symbol) or undefined
+
+  @dump: (node, prefix = '') ->
+    console.log prefix + node.name
+    for key, val of node.defs
+      console.log prefix, ' +', key, '::', val
+    for n in node.nodes
+      ScopeNode.dump n, prefix + '  '
 
 typecheck = (cs_ast) ->
   return unless cs_ast.body
   console.log cs_ast.body.statements
   root = new ScopeNode
+  root.name = 'root'
   _typecheck cs_ast.body.statements, root
-  console.log 'root', root
+  # console.log 'root', root
+  ScopeNode.dump root
 
 _typecheck = (statements, scope) ->
+  # console.log statements, scope
   for statement in statements
     # クラス
     if statement.nameAssignee? and statement.ctor?
-      {body} = statement
-      node =  new ScopeNode
+      {body, name} = statement
+      node = new ScopeNode
+      node.name   = name.data
       node.parent = scope
       scope.nodes.push node
       _typecheck body.statements, node
@@ -63,36 +77,44 @@ _typecheck = (statements, scope) ->
     if statement.assignee? and statement.expression?
       {assignee, expression} = statement
       symbol          = assignee.data
-      registered_type = scope.getType(symbol)
+      registered_type = scope.getScopedType(symbol)
       infered_type    = guess_expr_type expression
+      assigned_type   = assignee.annotation?.type
 
       # 型識別子が存在し、既にそのスコープで宣言済みのシンボルである場合、二重定義として例外
-      # if scope.getType(symbol)? and registered_type?
-      #   throw new Error 'double bind'
+      if registered_type? and assigned_type?
+        throw new Error 'double bind', symbol
 
       # 型識別子が存在せず、既にそのスコープで宣言済みのシンボルである場合、再度型推論する
-      symbol = assignee.data
-      if scope.getType(symbol)?
+      if registered_type?
         # 推論済みor anyならok
         unless registered_type is infered_type or registered_type is 'Any'
           throw new Error "'#{symbol}' is expected to #{registered_type} indeed #{infered_type}"
         continue
 
       # 型識別子が存在せず、既にそのスコープで宣言済みの型である場合、再度型推論する識別子が存在する場合スコープに追加する
-      assigned_type = assignee.annotation?.type
       if assigned_type
         if assigned_type is 'Any'
           scope.setType symbol, 'Any'
         else if assigned_type is infered_type
           scope.setType symbol, assignee.annotation.type
+          # 関数を追加
+          if infered_type is 'Function'
+            fnode = new ScopeNode
+            fnode.name   = symbol
+            fnode.parent = scope
+            scope.nodes.push fnode
+            _typecheck expression.body.statements, fnode
         else
           throw new Error "'#{symbol}' is expected to #{assignee.annotation.type} indeed #{infered_type}"
       else
-        scope.setType symbol, 'Any'
-
-
-
-
+        scope.setType symbol, infered_type
+        if infered_type is 'Function'
+          fnode = new ScopeNode
+          fnode.name   = symbol
+          fnode.parent = scope
+          scope.nodes.push fnode
+          _typecheck expression.body.statements, fnode
 
 
 CoffeeScript =

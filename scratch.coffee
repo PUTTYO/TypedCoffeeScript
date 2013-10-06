@@ -3,13 +3,16 @@ y :: String = "hello"
 z :: String = 'changed'
 # z :: String = 4 #=> Error
 y = z
-# y = x #=> Erro
+# y = x #=> Error
 a :: Any = 3
 a = 'fadfa'
-class X
-  # x :: Number
-  constructor: ->
-  f : ->
+b = 'a'
+fn :: Function = ->
+  x = 3
+  n = ->
+    i = ''
+  # x = "" #=> Error
+  # y :: String = ""
 
 # f :: Number -> Number = (n) -> n * n
-console.log 'finishe'
+console.log 'finish'
