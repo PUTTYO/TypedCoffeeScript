@@ -6,4 +6,10 @@ y = z
 # y = x #=> Erro
 a :: Any = 3
 a = 'fadfa'
-console.log y
+class X
+  # x :: Number
+  constructor: ->
+  f : ->
+
+# f :: Number -> Number = (n) -> n * n
+console.log 'finishe'
