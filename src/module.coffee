@@ -60,7 +60,6 @@ typecheck = (cs_ast) ->
   root = new ScopeNode
   root.name = 'root'
   _typecheck cs_ast.body.statements, root
-  # console.log 'root', root
   ScopeNode.dump root
 
 _typecheck = (statements, scope) ->
@@ -74,10 +73,9 @@ _typecheck = (statements, scope) ->
       node.parent = scope
       scope.nodes.push node
       _typecheck body.statements, node
-      continue
 
     # 代入
-    if statement.assignee? and statement.expression?
+    else if statement.assignee? and statement.expression?
       {assignee, expression} = statement
       symbol          = assignee.data
       registered_type = scope.getScopedType(symbol)
@@ -89,14 +87,13 @@ _typecheck = (statements, scope) ->
         throw new Error 'double bind', symbol
 
       # 型識別子が存在せず、既にそのスコープで宣言済みのシンボルである場合、再度型推論する
-      if registered_type?
+      else if registered_type?
         # 推論済みor anyならok
         unless registered_type is infered_type or registered_type is 'Any'
           throw new Error "'#{symbol}' is expected to #{registered_type} indeed #{infered_type}"
-        continue
 
       # 型識別子が存在せず、既にそのスコープで宣言済みの型である場合、再度型推論する識別子が存在する場合スコープに追加する
-      if assigned_type
+      else if assigned_type
         if assigned_type is 'Any'
           scope.setType symbol, 'Any'
         else if assigned_type is infered_type
@@ -111,8 +108,9 @@ _typecheck = (statements, scope) ->
         else
           throw new Error "'#{symbol}' is expected to #{assignee.annotation.type} indeed #{infered_type}"
       else
-        scope.setType symbol, infered_type
-        if infered_type is 'Function'
+        # scope.setType symbol, infered_type
+        scope.setType symbol, 'Any'
+        if infered_type is 'Function' and expression.body?.statements?
           fnode = new ScopeNode
           fnode.name   = symbol
           fnode.parent = scope
