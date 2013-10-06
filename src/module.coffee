@@ -20,7 +20,7 @@ escodegenFormat =
   parentheses: no
 
 
-decide_expr_type = (expr) ->
+guess_expr_type = (expr) ->
   if (typeof expr.data) is 'number'
     'number'
   else if (typeof expr.data) is 'string'
@@ -28,15 +28,14 @@ decide_expr_type = (expr) ->
   else
     'any'
 
+scope = {}
 typecheck = (cs_ast) ->
-  scope = {}
-  # console.log cs_ast.body.statements
-
-  for {assignee, expression} in cs_ast.body.statements when assignee?
-    if assignee.annotation.annotation.toLowerCase() isnt decide_expr_type expression
-      throw new Error "'#{assignee.data}' is expected to #{assignee.annotation.annotation} indeed #{decide_expr_type expression}"
-    scope[assignee.data] = assignee.annotation.annotation
-  # console.log scope
+  console.log cs_ast.body.statements
+  for {assignee, expression} in cs_ast.body.statements when assignee? and expression?
+    if assignee.annotation?.type?.toLowerCase() isnt guess_expr_type expression
+      throw new Error "'#{assignee.data}' is expected to #{assignee.annotation.type} indeed #{decide_expr_type expression}"
+    scope[assignee.data] = assignee.annotation.type
+  console.log scope
 
 
 
