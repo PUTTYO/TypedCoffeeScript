@@ -32,7 +32,7 @@ guess_expr_type = (expr) ->
   else
     'Any'
 
-# console = {log: ->}
+console = {log: ->}
 
 class ScopeNode
   constructor: ->
@@ -48,14 +48,14 @@ class ScopeNode
     @getType(symbol) or @parent?.getScopedType(symbol) or undefined
 
   @dump: (node, prefix = '') ->
-    console.log prefix + node.name
+    console.log prefix + "[#{node.name}]"
     for key, val of node.defs
       console.log prefix, ' +', key, '::', val
     for n in node.nodes
       ScopeNode.dump n, prefix + '  '
 
 typecheck = (cs_ast) ->
-  return unless cs_ast.body
+  return unless cs_ast.body?.statements?
   console.log cs_ast.body.statements
   root = new ScopeNode
   root.name = 'root'

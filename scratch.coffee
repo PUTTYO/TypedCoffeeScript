@@ -15,4 +15,5 @@ fn :: Function = ->
 
 class X
   f: ->
+    n = 3
 console.log 'finish'
